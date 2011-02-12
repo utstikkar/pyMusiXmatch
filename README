@@ -1,0 +1,23 @@
+README
+------
+README FOR PYMUSIXMATCH PROJECT
+
+by Amelie Anglade and Thierry Bertin-Mahieux
+   amelie.anglade@gmail.com & tb2332@columbia.edu
+   February 2011
+
+GOAL
+----
+Create a python wrapper around MusixMatch API:
+http://developer.musixmatch.com
+
+
+LICENSE
+-------
+See LICENSE, but it is GPL
+
+
+QUESTIONS
+---------
+Questions and comments should be adressed to:
+Amelie Anglade < amelie.anglade@gmail.com >

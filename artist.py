@@ -61,6 +61,9 @@ class Artist(object):
 		for k in artistdata.keys():
 			self.__setattr__(k,artistdata[k])	
 
+	def __str__(self):
+		""" pretty printout """
+		return 'MusixMatch Artist: '+str(self.__dict__)
 
 #artist.search in API		
 def search(**args):

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 test.py
    by Amelie Anglade and Thierry Bertin-Mahieux
@@ -27,12 +28,10 @@ import sys
 import track as TRACK
 
 
-
-
 def die_with_usage():
     """ HELP MENU """
     print 'test.py'
-    print ' by A. Anglande and T. Bertin-Mahieux'
+    print ' by A. Anglade and T. Bertin-Mahieux'
     print '    New York Music Hack Day, February 2011'
     print ''
     print 'This code test the MusixMatch Python API'
@@ -51,3 +50,5 @@ if __name__ == '__main__':
 
     # create a track
     track = TRACK.Track(4110618)
+    print '*********** TRACK 4110618 ACQUIRED ************'
+    print track

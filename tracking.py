@@ -74,6 +74,9 @@ def rights_clearance(base_url,artistname,trackname,apikey=None):
       The signature: Calculate the md5 of this URL+apikey and add it as
       the 's' parameter
     """
+    # apikey
+    if apikey is None:
+        apikey = os.environ['MUSIXMATCH_API_KEY']
     # quote names
     aname_quote = urllib.quote( artistname.lower() )
     tname_quote = urllib.quote( trackname.lower() )

@@ -13,6 +13,8 @@ class Track(object):
 	"""
 	Class to query the musixmatch API tracks
 	"""
+	
+	#track.get in API
 	def __init__(self):
 		"""
 		Takes a musixmatch ID or musicbrainz id or echo nest track id
@@ -21,15 +23,23 @@ class Track(object):
 		self._tid = ''
 		return
 		
-		
+	#track.lyrics.get in API	
 	def lyrics(self):
 		"""
 		"""
 		raise NotImplementedError
 		
+	#track.subtitle.get	in API
 	def subtitles(self):
 		raise NotImplementedError
 		
-		
+	#track.chart.get in API	
 	def charts(self):
 		raise NotImplementedError
+		
+		
+#track.search in API		
+def search():
+	track_list = list()
+	
+	return track_list

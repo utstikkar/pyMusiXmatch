@@ -72,7 +72,7 @@ def rights_clearance(base_url,artistname,trackname,apikey=None):
       of the lyrics as GET parameters.
     * The signature
       The signature: Calculate the md5 of this URL+apikey and add it as
-      the “s” parameter
+      the 's' parameter
     """
     # quote names
     aname_quote = urllib.quote( artistname.lower() )

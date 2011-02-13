@@ -25,15 +25,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-MUSIXMATCH_API_KEY = None
+
 
 import os
 
+MUSIXMATCH_API_KEY = None
 if('MUSIXMATCH_API_KEY' in os.environ):
     MUSIXMATCH_API_KEY = os.environ['MUSIXMATCH_API_KEY']
-else:
-	#TODO change that?
-    MUSIXMATCH_API_KEY = None
 
 API_HOST = 'http://developer.musixmatch.com'
 API_SELECTOR = '/ws/1.1/'
@@ -46,18 +44,30 @@ class MusixMatchAPIError(Exception):
     def __init__(self, code, message):
         self.args = ('MusixMatch API Error %d: %s' % (code, message),)
 
+
 def call(method, params):
-	#TODO check API key and JSON
+    """
+    Do the GET call to the MusixMatch API
+    """
     for k,v in params.items():
         if isinstance(v, unicode):
             params[k] = v.encode('utf-8')
+    # sanity checks
+    params['format']='json'
+    if not 'apikey' in params.keys() or params['apikey'] is None:
+        params['apikey'] = MUSIXMATCH_API_KEY
+    if params['apikey'] is None:
+        raise MusixMatchAPIError(-1,'EMPTY API KEY')
+    # encode the url request, call
     params = urllib.urlencode(params)
-    
     url = 'http://%s%s%s?%s' % (API_HOST, API_SELECTOR, method, params)
     f = urllib.urlopen(url)
     response = f.read()
     # decode response into json
+
+    # return body if status is OK
     return check_status(response)
+
 
 def check_status(response):
     """

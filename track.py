@@ -71,12 +71,21 @@ class Track(object):
 		for k in trackdata.keys():
 			self.__setattr__(k,trackdata[k])
 
-		
+	# track.lyrics.get in the API
 	def lyrics(self):
 		"""
-		track.lyrics.get in the API
+		Get the lyrics for that track.
+		RETURN
+		   dictionary containing keys:
+		       - 'lyrics_body'   (main data)
+		       - 'lyrics_id'
+		       - 'lyrics_language'
+		       - 'lyrics copyright'
+		       - 'pixel_tracking_url'
+		       - 'script_tracking_url'
 		"""
-		raise NotImplementedError
+		body = util.call('track.lyrics.get',{'track_id':self.track_id})
+		return body["lyrics"]
 		
 	#track.subtitle.get in API
 	def subtitles(self):

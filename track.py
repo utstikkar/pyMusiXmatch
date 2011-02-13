@@ -6,9 +6,6 @@ track.py
 Class and functions to query MusixMatch regarding a track
 (find the track, get lyrics, chart info, ...)
 
-This is part of the Million Song Dataset project from
-LabROSA (Columbia University) and The Echo Nest.
-
 (c) 2011, A. Anglade and T. Bertin-Mahieux
 
 This program is free software: you can redistribute it and/or modify

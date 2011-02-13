@@ -47,15 +47,17 @@ API_SELECTOR = '/ws/1.1/'
 
 # cache time length (seconds)
 CACHE_TLENGTH = 3600
+MXMPY_CACHE = TimedCache()
 
 class TimedCache():
     """
     Class to cach hashable object for a given time length
     """
-    def __init__(self):
+    def __init__(self,verbose=0):
         """ contructor, init main dict and priority queue """
         self.stuff = {}
         self.queue = PriorityQueue()
+        self.verbose=verbose
         
     def cache(self,query,res):
         """
@@ -70,7 +72,6 @@ class TimedCache():
                 # object could actually have been changed for newer
                 if t - self.stuff[old_obj[1]][0] > CACHE_TLENGTH:
                     self.stuff.pop(old_obj[1])
-                if t - old_data[0] < CACHE_TLENTH
             else:
                 self.queue.put_nowait(old_obj)
         except Empty:
@@ -79,6 +80,7 @@ class TimedCache():
         try:
             # I ASSUME IT'S NOT IN THERE
             hashcode = hash(query)
+            if self.verbose: print 'cache, hashcode is:',hashcode
             self.stuff[hashcode] = (time.time(), copy.deepcopy(res))
             self.queue.put_nowait( (time.time() , hashcode ) )
         except TypeError,e:
@@ -91,6 +93,7 @@ class TimedCache():
         Return None if not there or too old
         """
         hashcode = hash(query)
+        if self.verbose: print 'query_cache, hashcode is:',hashcode
         if hashcode in self.stuff.keys():
             data = self.stuff[hashcode]
             if time.time() - data[0] > CACHE_TLENGTH:
@@ -106,13 +109,19 @@ class MusixMatchAPIError(Exception):
     Error raised when the status code returned by
     the MusixMatch API is not 200
     """
-    def __init__(self, code, message):
+    def __init__(self, code, message=None):
+        if message is None:
+            message = status_code(code)
         self.args = ('MusixMatch API Error %d: %s' % (code, message),)
 
 
-def call(method, params):
+def call(method, params, nocaching=False):
     """
     Do the GET call to the MusixMatch API
+    Paramteres
+      method     - string describing the method, e.g. track.get
+      params     - dictionary of params, e.g. track_id -> 123
+      nocaching  - set to True to disable caching
     """
     for k,v in params.items():
         if isinstance(v, unicode):
@@ -122,9 +131,14 @@ def call(method, params):
     if not 'apikey' in params.keys() or params['apikey'] is None:
         params['apikey'] = MUSIXMATCH_API_KEY
     if params['apikey'] is None:
-        raise MusixMatchAPIError(-1,'EMPTY API KEY')
-    # encode the url request, call
+        raise MusixMatchAPIError(-1,'EMPTY API KEY, NOT IN YOUR ENVIRONMENT?')
     params = urllib.urlencode(params)
+    # caching
+    if not nocaching:
+        cached_res = MXMPY_CACHE.query_cache(str(params))
+        if not cached_res is None:
+            return cached_res
+    # encode the url request, call
     url = 'http://%s%s%s?%s' % (API_HOST, API_SELECTOR, method, params)
     print url
     f = urllib.urlopen(url)
@@ -132,7 +146,12 @@ def call(method, params):
     # decode response into json
     response = decode_json(response)
     # return body if status is OK
-    return check_status(response)
+    res_checked = check_status(response)
+    # cache
+    if not nocaching:
+        MXMPY_CACHE.cache(str(params),res_checked)
+    # done
+    return res_checked
 
 def decode_json(raw_json):
     """
@@ -154,16 +173,38 @@ def check_status(response):
        except if error was raised
     """
     if not 'message' in response.keys():
-        raise MusixMatchAPIError(-1,'Unknown error')
+        raise MusixMatchAPIError(-1)
     msg = response['message']
     if not 'header' in msg.keys():
-        raise MusixMatchAPIError(-1,'Unknown error')
+        raise MusixMatchAPIError(-1)
     header = msg['header']
     if not 'status_code' in header.keys():
-        raise MusixMatchAPIError(-1,'Unknown error')
+        raise MusixMatchAPIError(-1)
     code = header['status_code']
     if code != 200:
-        raise MusixMatchAPIError(code,'(code description to be implemented)')
+        raise MusixMatchAPIError(code)
     # all good, return body
     body = msg['body']
     return body
+
+def status_code(value):
+    """
+    Get a value, i.e. error code as a int.
+    Returns an appropriate message.
+    """
+    if value == 200:
+        return "The request was successful."
+    if value == 400:
+        return "The request had bad syntax or was inherently impossible to be satisfied."
+    if value == 401:
+        return "Authentication failed, probably because of a bad API key."
+    if value == 402:
+        return "A limit was reached, either you exceeded per hour requests limits or your balance is insufficient."
+    if value == 403:
+        return "You are not authorized to perform this operation / the api version you're trying to use has been shut down."
+    if value == 404:
+        return "Requested resource was not found."
+    if value == 405:
+        return "Requested method was not found."
+    # wrong code?
+    return "Unknown error code: "+str(value)

@@ -59,12 +59,7 @@ class Artist(object):
 			artistdata = body['artist']
 		# save result
 		for k in artistdata.keys():
-			self.__setattr__(k,artistdata[k])
-
-
-	#artist.chart.get in API	
-	def charts(self):
-		raise NotImplementedError
+			self.__setattr__(k,artistdata[k])	
 
 
 #artist.search in API		
@@ -87,6 +82,23 @@ def search(**args):
 	body = util.call('artist.search',params)
 	artist_list_dict = body["artist_list"]
 	for artist_dict in artist_list_dict:
-		t = Track(-1,artistdata=artist_dict["track"])
+		t = Artist(-1,artistdata=artist_dict["artist"])
+		artist_list.append(t)
+	return artist_list
+
+#artist.chart.get in API
+def chart(**args):
+	"""
+	Parameters:
+	page: requested page of results
+	page_size: desired number of items per result page
+	country: the country code of the desired country chart
+	"""
+	artist_list = list()
+	params = dict((k, v) for k, v in args.iteritems() if not v is None)
+	body = util.call('artist.chart.get',params)
+	artist_list_dict = body["artist_list"]
+	for artist_dict in artist_list_dict:
+		t = Artist(-1,artistdata=artist_dict["artist"])
 		artist_list.append(t)
 	return artist_list

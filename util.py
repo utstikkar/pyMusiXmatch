@@ -27,7 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
+import time
+import copy
 import urllib
+try:
+    from Queue import PriorityQueue, Empty
+except ImportError:
+    from queue import PriorityQueue, Empty
 try:
     import json
 except ImportError:
@@ -41,6 +47,61 @@ if('MUSIXMATCH_API_KEY' in os.environ):
 # details of the website to call
 API_HOST = 'api.musixmatch.com'
 API_SELECTOR = '/ws/1.1/'
+
+# cache time length (seconds)
+CACHE_TLENGTH = 3600
+
+class TimedCache():
+    """
+    Class to cach hashable object for a given time length
+    """
+    def __init__(self):
+        """ contructor, init main dict and priority queue """
+        self.stuff = {}
+        self.queue = PriorityQueue()
+        
+    def cache(self,query,res):
+        """
+        Cache a query with a given result
+        Use the occasion to remove one old stuff if needed
+        """
+        # remove old object
+        try:
+            old_obj = self.queue.get_nowait()
+            t = time.time()
+            if t - old_obj[0] > CACHE_TLENGTH:
+                # object could actually have been changed for newer
+                if t - self.stuff[old_obj[1]][0] > CACHE_TLENGTH:
+                    self.stuff.pop(old_obj[1])
+                if t - old_data[0] < CACHE_TLENTH
+            else:
+                self.queue.put_nowait(old_obj)
+        except Empty:
+            pass
+        # add object to cache
+        try:
+            # I ASSUME IT'S NOT IN THERE
+            hashcode = hash(query)
+            self.stuff[hashcode] = (time.time(), copy.deepcopy(res))
+            self.queue.put_nowait( (time.time() , hashcode ) )
+        except TypeError,e:
+            print 'Error, stuff not hashable:',e
+            pass
+        
+    def query_cache(self,query):
+        """
+        query the cache for a given query
+        Return None if not there or too old
+        """
+        hashcode = hash(query)
+        if hashcode in self.stuff.keys():
+            data = self.stuff[hashcode]
+            if time.time() - data[0] > CACHE_TLENGTH:
+                self.stuff.pop(data[1])
+                return None
+            return data[1]
+        return None
+        
 
 # typical API error message
 class MusixMatchAPIError(Exception):

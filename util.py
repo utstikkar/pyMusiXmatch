@@ -136,7 +136,7 @@ def call(method, params, nocaching=False):
     params = urllib.urlencode(params)
     # caching
     if not nocaching:
-        cached_res = MXMPY_CACHE.query_cache(str(params))
+        cached_res = MXMPY_CACHE.query_cache(method+str(params))
         if not cached_res is None:
             return cached_res
     # encode the url request, call
@@ -150,7 +150,7 @@ def call(method, params, nocaching=False):
     res_checked = check_status(response)
     # cache
     if not nocaching:
-        MXMPY_CACHE.cache(str(params),res_checked)
+        MXMPY_CACHE.cache(method+str(params),res_checked)
     # done
     return res_checked
 

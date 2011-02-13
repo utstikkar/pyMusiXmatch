@@ -79,7 +79,6 @@ def search(**args):
 	f_artist_id: filter the results by the artist_id
 	f_artist_mbid: filter the results by the artist_mbid
 	"""
-	print sys.argv
 	artist_list = list()
 	params = dict((k, v) for k, v in args.iteritems() if not v is None)
 	body = util.call('artist.search',params)

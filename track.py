@@ -41,16 +41,23 @@ class Track(object):
 	Then, one can search for lyrics or charts.
 	"""
 	#track.get in API
-	def __init__(self,track_id, musicbrainz=False, echonest=False):
+	def __init__(self,track_id, musicbrainz=False, echonest=False,
+		     trackdata=None):
 		"""
 		Create a Track object based on a give ID.
 		If musicbrainz or echonest is True, search for the song.
 		Takes a musixmatch ID or musicbrainz id or echo nest track id
 		Raises an exception if the track is not found.
+		INPUT
+		   track_id     - track id (from whatever service)
+		   musicbrainz  - set to True if track_id from musicbrainz
+		   echonest     - set to True if track_id from The Echo Nest
+		   trackdata    - if you already have the information about
+		                  the track (after a search), bypass API call
 		"""
 		if musicbrainz and echonest:
 			raise ValueError('Creating a Track, only musicbrainz or echonest can be true.')
-		else:
+		if trackdata is None:
 			if musicbrainz:
 				params = {'musicbrainz_id':track_id}
 			elif echonest:
@@ -60,9 +67,9 @@ class Track(object):
 			# url call
 			body = util.call('track.get',params)
 			trackdata = body['track']
-			# save result
-			for k in trackdata.keys():
-				self.__setattr__(k,trackdata[k])
+		# save result
+		for k in trackdata.keys():
+			self.__setattr__(k,trackdata[k])
 
 		
 	def lyrics(self):

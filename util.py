@@ -47,7 +47,6 @@ API_SELECTOR = '/ws/1.1/'
 
 # cache time length (seconds)
 CACHE_TLENGTH = 3600
-MXMPY_CACHE = TimedCache()
 
 class TimedCache():
     """
@@ -101,7 +100,9 @@ class TimedCache():
                 return None
             return data[1]
         return None
-        
+
+# instace of the cache
+MXMPY_CACHE = TimedCache()
 
 # typical API error message
 class MusixMatchAPIError(Exception):

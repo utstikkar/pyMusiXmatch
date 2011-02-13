@@ -90,7 +90,22 @@ class Track(object):
 		
 #track.search in API		
 def search(**args):
-	
+	"""
+	Parameters:
+	q: a string that will be searched in every data field (q_track, q_artist, q_lyrics)
+	q_track: words to be searched among track titles
+	q_artist: words to be searched among artist names
+	q_track_artist: words to be searched among track titles or artist names
+	q_lyrics: words to be searched into the lyrics
+	page: requested page of results
+	page_size: desired number of items per result page
+	f_has_lyrics: exclude tracks without an available lyrics (automatic if q_lyrics is set)
+	f_artist_id: filter the results by the artist_id
+	f_artist_mbid: filter the results by the artist_mbid
+	quorum_factor: only works together with q and q_track_artist parameter.
+	Possible values goes from 0.1 to 0.9
+	A value of 0.9 means: 'match at least 90 percent of the given words'.
+	"""
 	print sys.argv
 	track_list = list()
 	params = dict((k, v) for k, v in args.iteritems() if not v is None)

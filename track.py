@@ -1,31 +1,72 @@
-#!/usr/bin/env python
 """
 track.py
- by A. Anglade and T. Bertin-Mahieux
+   by Amelie Anglade and Thierry Bertin-Mahieux
+      amelie.anglade@gmail.com & tb2332@columbia.edu
+
+Class and functions to query MusixMatch regarding a track
+(find the track, get lyrics, chart info, ...)
+
+This is part of the Million Song Dataset project from
+LabROSA (Columbia University) and The Echo Nest.
+
+(c) 2011, A. Anglade and T. Bertin-Mahieux
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
 import sys
 import time
 import datetime
+import util
 
 class Track(object):
 	"""
 	Class to query the musixmatch API tracks
+	If the class is constructed with a MusixMatch ID (default),
+	we assume the ID exists.
+	The constructor can find the track from a musicbrainz ID
+	or Echo Nest track ID.
+	Then, one can search for lyrics or charts.
 	"""
-	
 	#track.get in API
-	def __init__(self):
+	def __init__(self,track_id, musicbrainz=False, echonest=False):
 		"""
+		Create a Track object based on a give ID.
+		If musicbrainz or echonest is True, search for the song.
 		Takes a musixmatch ID or musicbrainz id or echo nest track id
+		Raises an exception if the track is not found.
 		"""
+		if musicbrainz and echonest:
+			raise ValueError('Creating a Track, only musicbrainz or echonest can be true.')
+		else:
+			if musicbrainz:
+				params = {'musicbrainz_id':track_id}
+			elif echonest:
+				params = {'echonest_track_id':track_id}
+			else:
+				params = {'track_id':track_id}
+			# url call
+			body = util.call('track.search',params)
+			# save result
+			for k in body.keys():
+				eval('self.'+k+' = body[k]')
+
 		
-		self._tid = ''
-		return
-		
-	#track.lyrics.get in API	
 	def lyrics(self):
 		"""
+		track.lyrics.get in the API
 		"""
 		raise NotImplementedError
 		

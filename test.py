@@ -52,3 +52,20 @@ if __name__ == '__main__':
     track = TRACK.Track(4110618)
     print '*********** TRACK 4110618 ACQUIRED ************'
     print track
+
+    # get a list of tracks from a search
+    tracks = TRACK.search(q='Rick Astley Never Gonna Give You Up')
+    print '********** LIST OF TRACKS ACQUIRED ************'
+    for k in range(min(3,len(tracks))):
+        print tracks[k]
+
+    # get a list of tracks from charts
+    tracks = TRACK.chart()
+    print '****** LIST OF TRACKS FROM CHART ACQUIRED ******'
+    for k in range(min(3,len(tracks))):
+        print tracks[k]
+
+    # lyrics
+    lyrics_dict = track.lyrics()
+    print '************* LYRICS ACQUIRED ************'
+    print lyrics_dict

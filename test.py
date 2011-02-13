@@ -87,3 +87,13 @@ if __name__ == '__main__':
     print '**** LIST OF ARTISTS FROM CHART ACQUIRED *******'
     for k in range(min(3,len(artists))):
         print artists[k]
+
+    # get a base url for my domain
+    base_url = TRACKING.get_tracking_url('http://myawesomewebsite.com')
+    print '********** TRACKING URL BUILT ************'
+    print base_url
+
+    # get clearance rights for my song
+    song_rights_url = TRACKING.rights_clearance(base_url,'Bon Jovi','Leaving on a Prayer')
+    print '********** SONG CLEARANCE RIGHTS ACQUIRED ************'
+    print song_rights_url

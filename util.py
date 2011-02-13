@@ -25,17 +25,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
-
 import os
+import sys
+import urllib
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
+# MusixMatch API key, should be an environment variable
 MUSIXMATCH_API_KEY = None
 if('MUSIXMATCH_API_KEY' in os.environ):
     MUSIXMATCH_API_KEY = os.environ['MUSIXMATCH_API_KEY']
 
+# details of the website to call
 API_HOST = 'http://developer.musixmatch.com'
 API_SELECTOR = '/ws/1.1/'
 
+# typical API error message
 class MusixMatchAPIError(Exception):
     """
     Error raised when the status code returned by
@@ -64,10 +71,20 @@ def call(method, params):
     f = urllib.urlopen(url)
     response = f.read()
     # decode response into json
-
+    response = decode_json(response)
     # return body if status is OK
     return check_status(response)
 
+def decode_json(raw_json):
+    """
+    Transform the json into a python dictionary
+    or raise a ValueError
+    """
+    try:
+        response_dict = json.loads(raw_json)
+    except ValueError:
+        raise MusixMatchAPIError(-1, "Unknown error.")
+    return response_dict
 
 def check_status(response):
     """
@@ -78,13 +95,13 @@ def check_status(response):
        except if error was raised
     """
     if not 'message' in response.keys():
-        raise MusixMatchAPIError(-1,'unknown error')
+        raise MusixMatchAPIError(-1,'Unknown error')
     msg = response['message']
     if not 'header' in msg.keys():
-        raise MusixMatchAPIError(-1,'unknown error')
+        raise MusixMatchAPIError(-1,'Unknown error')
     header = msg['header']
     if not 'status_code' in header.keys():
-        raise MusixMatchAPIError(-1,'unknown error')
+        raise MusixMatchAPIError(-1,'Unknown error')
     code = header['status_code']
     if code != 200:
         raise MusixMatchAPIError(code,'(code description to be implemented)')

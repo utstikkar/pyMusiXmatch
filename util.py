@@ -39,7 +39,7 @@ if('MUSIXMATCH_API_KEY' in os.environ):
     MUSIXMATCH_API_KEY = os.environ['MUSIXMATCH_API_KEY']
 
 # details of the website to call
-API_HOST = 'http://developer.musixmatch.com'
+API_HOST = 'api.musixmatch.com'
 API_SELECTOR = '/ws/1.1/'
 
 # typical API error message
@@ -68,6 +68,7 @@ def call(method, params):
     # encode the url request, call
     params = urllib.urlencode(params)
     url = 'http://%s%s%s?%s' % (API_HOST, API_SELECTOR, method, params)
+    print url
     f = urllib.urlopen(url)
     response = f.read()
     # decode response into json

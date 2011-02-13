@@ -58,10 +58,11 @@ class Track(object):
 			else:
 				params = {'track_id':track_id}
 			# url call
-			body = util.call('track.search',params)
+			body = util.call('track.get',params)
+			trackdata = body['track']
 			# save result
-			for k in body.keys():
-				eval('self.'+k+' = body[k]')
+			for k in trackdata.keys():
+				self.__setattr__(k,trackdata[k])
 
 		
 	def lyrics(self):

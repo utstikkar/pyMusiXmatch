@@ -44,9 +44,10 @@ class Track(object):
 	def __init__(self,track_id, musicbrainz=False, echonest=False,
 		     trackdata=None):
 		"""
-		Create a Track object based on a give ID.
+		Create a Track object based on a given ID.
 		If musicbrainz or echonest is True, search for the song.
-		Takes a musixmatch ID or musicbrainz id or echo nest track id
+		Takes a musixmatch ID (if both musicbrainz and echonest are False) 
+		or musicbrainz id or echo nest track id
 		Raises an exception if the track is not found.
 		INPUT
 		   track_id     - track id (from whatever service)
@@ -56,7 +57,7 @@ class Track(object):
 		                  the track (after a search), bypass API call
 		"""
 		if musicbrainz and echonest:
-			raise ValueError('Creating a Track, only musicbrainz or echonest can be true.')
+			raise ValueError('Creating a Track, only musicbrainz OR echonest can be true.')
 		if trackdata is None:
 			if musicbrainz:
 				params = {'musicbrainz_id':track_id}
@@ -88,7 +89,14 @@ class Track(object):
 		
 		
 #track.search in API		
-def search():
-	track_list = list()
+def search(**args):
 	
+	print sys.argv
+	track_list = list()
+	params = dict((k, v) for k, v in args.iteritems() if not v is None)
+	body = util.call('track.search',params)
+	track_list_dict = body["track_list"]
+	for track_dict in track_list_dict:
+		t = Track(-1,trackdata=track_dict["track"])
+		track_list.append(t)
 	return track_list

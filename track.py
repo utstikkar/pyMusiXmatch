@@ -6,9 +6,6 @@ track.py
 Class and functions to query MusixMatch regarding a track
 (find the track, get lyrics, chart info, ...)
 
-This is part of the Million Song Dataset project from
-LabROSA (Columbia University) and The Echo Nest.
-
 (c) 2011, A. Anglade and T. Bertin-Mahieux
 
 This program is free software: you can redistribute it and/or modify
@@ -44,9 +41,10 @@ class Track(object):
 	def __init__(self,track_id, musicbrainz=False, echonest=False,
 		     trackdata=None):
 		"""
-		Create a Track object based on a give ID.
+		Create a Track object based on a given ID.
 		If musicbrainz or echonest is True, search for the song.
-		Takes a musixmatch ID or musicbrainz id or echo nest track id
+		Takes a musixmatch ID (if both musicbrainz and echonest are False) 
+		or musicbrainz id or echo nest track id
 		Raises an exception if the track is not found.
 		INPUT
 		   track_id     - track id (from whatever service)
@@ -56,7 +54,7 @@ class Track(object):
 		                  the track (after a search), bypass API call
 		"""
 		if musicbrainz and echonest:
-			raise ValueError('Creating a Track, only musicbrainz or echonest can be true.')
+			raise ValueError('Creating a Track, only musicbrainz OR echonest can be true.')
 		if trackdata is None:
 			if musicbrainz:
 				params = {'musicbrainz_id':track_id}
@@ -100,7 +98,29 @@ class Track(object):
 		return 'MusixMatch Track: '+str(self.__dict__)
 		
 #track.search in API		
-def search():
+def search(**args):
+	"""
+	Parameters:
+	q: a string that will be searched in every data field (q_track, q_artist, q_lyrics)
+	q_track: words to be searched among track titles
+	q_artist: words to be searched among artist names
+	q_track_artist: words to be searched among track titles or artist names
+	q_lyrics: words to be searched into the lyrics
+	page: requested page of results
+	page_size: desired number of items per result page
+	f_has_lyrics: exclude tracks without an available lyrics (automatic if q_lyrics is set)
+	f_artist_id: filter the results by the artist_id
+	f_artist_mbid: filter the results by the artist_mbid
+	quorum_factor: only works together with q and q_track_artist parameter.
+	Possible values goes from 0.1 to 0.9
+	A value of 0.9 means: 'match at least 90 percent of the given words'.
+	"""
+	print sys.argv
 	track_list = list()
-	
+	params = dict((k, v) for k, v in args.iteritems() if not v is None)
+	body = util.call('track.search',params)
+	track_list_dict = body["track_list"]
+	for track_dict in track_list_dict:
+		t = Track(-1,trackdata=track_dict["track"])
+		track_list.append(t)
 	return track_list

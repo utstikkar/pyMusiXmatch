@@ -26,7 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 import track as TRACK
-
+import artist as ARTIST
+import tracking as TRACKING
 
 def die_with_usage():
     """ HELP MENU """
@@ -69,3 +70,20 @@ if __name__ == '__main__':
     lyrics_dict = track.lyrics()
     print '************* LYRICS ACQUIRED ************'
     print lyrics_dict
+
+    # artist
+    artist = ARTIST.Artist(10832)
+    print '*********** ARTIST 10832 ACQUIRED ************'
+    print artist
+
+    # get a list of artists from a search
+    artists = ARTIST.search(q='Jean Leloup')
+    print '********** LIST OF ARTISTS ACQUIRED ************'
+    for k in range(min(3,len(artists))):
+        print artists[k]
+
+    # get a list of artists from charts
+    artists = ARTIST.chart()
+    print '**** LIST OF ARTISTS FROM CHART ACQUIRED *******'
+    for k in range(min(3,len(artists))):
+        print artists[k]

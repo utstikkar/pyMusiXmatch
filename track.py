@@ -89,14 +89,10 @@ class Track(object):
 	def subtitles(self):
 		"""
 		Get subtitles, available for a few songs as of 02/2011
+		Returns dictionary.
 		"""
 		body = util.call('track.subtitle.get',{'track_id':self.track_id})
 		return body["subtitle"]
-
-		
-	#track.chart.get in API	
-	def charts(self):
-		raise NotImplementedError
 
 	def __str__(self):
 		""" pretty printout """
@@ -120,10 +116,27 @@ def search(**args):
 	Possible values goes from 0.1 to 0.9
 	A value of 0.9 means: 'match at least 90 percent of the given words'.
 	"""
-	print sys.argv
 	track_list = list()
 	params = dict((k, v) for k, v in args.iteritems() if not v is None)
 	body = util.call('track.search',params)
+	track_list_dict = body["track_list"]
+	for track_dict in track_list_dict:
+		t = Track(-1,trackdata=track_dict["track"])
+		track_list.append(t)
+	return track_list
+
+#track.chart.get in API
+def chart(**args):
+	"""
+	Parameters:
+	page: requested page of results
+	page_size: desired number of items per result page
+	country: the country code of the desired country chart
+	f_has_lyrics: exclude tracks without an available lyrics (automatic if q_lyrics is set)
+	"""
+	track_list = list()
+	params = dict((k, v) for k, v in args.iteritems() if not v is None)
+	body = util.call('track.chart.get',params)
 	track_list_dict = body["track_list"]
 	for track_dict in track_list_dict:
 		t = Track(-1,trackdata=track_dict["track"])

@@ -11,6 +11,13 @@ GOAL
 Create a python wrapper around MusixMatch API:
 http://developer.musixmatch.com
 
+INSTALL
+-------
+* get an API key, put it in your environment variable: MUSIXMATCH_API_KEY
+* python setup.py build
+  python setup.py install
+* in python: import musixmatch
+That's it!
 
 LICENSE
 -------

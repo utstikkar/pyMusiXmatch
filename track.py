@@ -78,14 +78,17 @@ class Track(object):
 		"""
 		raise NotImplementedError
 		
-	#track.subtitle.get	in API
+	#track.subtitle.get in API
 	def subtitles(self):
 		raise NotImplementedError
 		
 	#track.chart.get in API	
 	def charts(self):
 		raise NotImplementedError
-		
+
+	def __str__(self):
+		""" pretty printout """
+		return 'MusixMatch Track: '+str(self.__dict__)
 		
 #track.search in API		
 def search():

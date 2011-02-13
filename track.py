@@ -94,9 +94,26 @@ class Track(object):
 		body = util.call('track.subtitle.get',{'track_id':self.track_id})
 		return body["subtitle"]
 
+	#track.lyrics.fedback.post
+	def feedback(self,feedback):
+		"""
+		To leave feedback about lyrics for this track.
+		PARAMETERS
+		'feedback' can be one of:
+		* wrong_attribution: the lyrics shown are not by the artist that I selected.
+		* bad_characters: there are strange characters and/or words that are partially scrambled.
+		* lines_too_long: the text for each verse is too long!
+		* wrong_verses: there are some verses missing from the beginning or at the end.
+		* wrong_formatting: the text looks horrible, please fix it!
+		"""
+		params = {'track_id':self.track_id,'lyrics_id':self.lyrics_id,'feedback':feedback}
+		body = util.call('track.lyrics.feedback.post',params)		
+		
+
 	def __str__(self):
 		""" pretty printout """
 		return 'MusixMatch Track: '+str(self.__dict__)
+
 		
 #track.search in API		
 def search(**args):

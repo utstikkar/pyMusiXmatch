@@ -6,9 +6,6 @@ util.py
 Set of util functions used by the MusixMatch Python API,
 mostly do to HMTL calls.
 
-This is part of the Million Song Dataset project from
-LabROSA (Columbia University) and The Echo Nest.
-
 (c) 2011, A. Anglade and T. Bertin-Mahieux
 
 This program is free software: you can redistribute it and/or modify

@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
-import track as TRACK
-import artist as ARTIST
-import tracking as TRACKING
+from musixmatch import track as TRACK
+from musixmatch import artist as ARTIST
+from musixmatch import tracking as TRACKING
 
 def die_with_usage():
     """ HELP MENU """

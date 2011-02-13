@@ -87,7 +87,12 @@ class Track(object):
 		
 	#track.subtitle.get in API
 	def subtitles(self):
-		raise NotImplementedError
+		"""
+		Get subtitles, available for a few songs as of 02/2011
+		"""
+		body = util.call('track.subtitle.get',{'track_id':self.track_id})
+		return body["subtitle"]
+
 		
 	#track.chart.get in API	
 	def charts(self):

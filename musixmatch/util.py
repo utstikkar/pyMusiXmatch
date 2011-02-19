@@ -69,8 +69,12 @@ class TimedCache():
             t = time.time()
             if t - old_obj[0] > CACHE_TLENGTH:
                 # object could actually have been changed for newer
-                if t - self.stuff[old_obj[1]][0] > CACHE_TLENGTH:
+                actual_stuff_time = self.stuff[old_obj[1]][0]
+                if t - actual_stuff_time > CACHE_TLENGTH:
                     self.stuff.pop(old_obj[1])
+                else:
+                    old_obj[0] = actual_stuff_time
+                    self.queue.put_nowait(old_obj)
             else:
                 self.queue.put_nowait(old_obj)
         except Empty:

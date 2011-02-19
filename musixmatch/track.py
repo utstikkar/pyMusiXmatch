@@ -137,7 +137,7 @@ def search(**args):
 	valid_params = ('q','q_track','q_artist','q_track_artist','q_lyrics','page','page_size','f_has_lyrics','f_artist_id','f_artist_mbid','quorum_factor','apikey')
 	for k in args.keys():
 		if not k in valid_params:
-			raise util.MusixMatchAPIError(-1,'Invalid search param: '+str(k))
+			raise util.MusixMatchAPIError(-1,'Invalid track search param: '+str(k))
 	# call and gather a list of tracks
 	track_list = list()
 	params = dict((k, v) for k, v in args.iteritems() if not v is None)
@@ -157,6 +157,12 @@ def chart(**args):
 	country: the country code of the desired country chart
 	f_has_lyrics: exclude tracks without an available lyrics (automatic if q_lyrics is set)
 	"""
+	# sanity check
+	valid_params = ('page','page_size','country','f_has_lyrics','apikey')
+	for k in args.keys():
+		if not k in valid_params:
+			raise util.MusixMatchAPIError(-1,'Invalid chart param: '+str(k))
+	# do the call and gather track list
 	track_list = list()
 	params = dict((k, v) for k, v in args.iteritems() if not v is None)
 	body = util.call('track.chart.get',params)

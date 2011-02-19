@@ -130,9 +130,15 @@ def search(**args):
 	f_artist_id: filter the results by the artist_id
 	f_artist_mbid: filter the results by the artist_mbid
 	quorum_factor: only works together with q and q_track_artist parameter.
-	Possible values goes from 0.1 to 0.9
-	A value of 0.9 means: 'match at least 90 percent of the given words'.
+	               Possible values goes from 0.1 to 0.9
+	               A value of 0.9 means: 'match at least 90 percent of the given words'.
 	"""
+	# sanity check
+	valid_params = ('q','q_track','q_artist','q_track_artist','q_lyrics','page','page_size','f_has_lyrics','f_artist_id','f_artist_mbid','quorum_factor','apikey')
+	for k in args.keys():
+		if not k in valid_params:
+			raise util.MusixMatchAPIError(-1,'Invalid search param: '+str(k))
+	# call and gather a list of tracks
 	track_list = list()
 	params = dict((k, v) for k, v in args.iteritems() if not v is None)
 	body = util.call('track.search',params)

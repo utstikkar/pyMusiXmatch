@@ -54,7 +54,7 @@ class Track(object):
 		                  the track (after a search), bypass API call
 		"""
 		if musicbrainz and echonest:
-			raise ValueError('Creating a Track, only musicbrainz OR echonest can be true.')
+			raise ValueError('Creating a Track, only musicbrainz OR echonest can be True.')
 		if trackdata is None:
 			if musicbrainz:
 				params = {'musicbrainz_id':track_id}

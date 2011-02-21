@@ -55,7 +55,7 @@ class TimedCache():
     def __init__(self,verbose=0):
         """ contructor, init main dict and priority queue """
         self.stuff = {}
-        self.queue = PriorityQueue()
+        self.last_cleanup = time.time()
         self.verbose=verbose
         
     def cache(self,query,res):
@@ -63,29 +63,19 @@ class TimedCache():
         Cache a query with a given result
         Use the occasion to remove one old stuff if needed
         """
-        # remove old object
+        # remove old stuff
+        curr_time = time.time()
+        if curr_time - self.last_cleanup > CACHE_TLENGTH:
+            if self.verbose: print 'we cleanup cache'
+            new_stuff = {}
+            new_stuff.update( filter(lambda x: curr_time - x[1][0] < CACHE_TLENGTH, self.stuff.items()) )
+            self.stuff = new_stuff
+            self.last_cleanup = curr_time
+        # add object to cache (try/except should be useless now)
         try:
-            old_obj = self.queue.get_nowait()
-            t = time.time()
-            if t - old_obj[0] > CACHE_TLENGTH:
-                # object could actually have been changed for newer
-                actual_stuff_time = self.stuff[old_obj[1]][0]
-                if t - actual_stuff_time > CACHE_TLENGTH:
-                    self.stuff.pop(old_obj[1])
-                else:
-                    old_obj[0] = actual_stuff_time
-                    self.queue.put_nowait(old_obj)
-            else:
-                self.queue.put_nowait(old_obj)
-        except Empty:
-            pass
-        # add object to cache
-        try:
-            # I ASSUME IT'S NOT IN THERE
             hashcode = hash(query)
             if self.verbose: print 'cache, hashcode is:',hashcode
             self.stuff[hashcode] = (time.time(), copy.deepcopy(res))
-            self.queue.put_nowait( (time.time() , hashcode ) )
         except TypeError,e:
             print 'Error, stuff not hashable:',e
             pass
@@ -100,7 +90,7 @@ class TimedCache():
         if hashcode in self.stuff.keys():
             data = self.stuff[hashcode]
             if time.time() - data[0] > CACHE_TLENGTH:
-                self.stuff.pop(data[1])
+                self.stuff.pop(hashcode)
                 return None
             return data[1]
         return None

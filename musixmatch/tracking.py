@@ -3,7 +3,7 @@ tracking.py
    by Amelie Anglade and Thierry Bertin-Mahieux
       amelie.anglade@gmail.com & tb2332@columbia.edu
 
-Functions to get the racking script onto your page and make your
+Functions to get the tracking script onto your page and make your
 use of MusixMatch legal.
 
 (c) 2011, A. Anglade and T. Bertin-Mahieux

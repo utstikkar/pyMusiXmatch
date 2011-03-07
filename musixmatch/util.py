@@ -4,7 +4,7 @@ util.py
       amelie.anglade@gmail.com & tb2332@columbia.edu
 
 Set of util functions used by the MusixMatch Python API,
-mostly do to HMTL calls.
+mostly do HMTL calls.
 
 (c) 2011, A. Anglade and T. Bertin-Mahieux
 

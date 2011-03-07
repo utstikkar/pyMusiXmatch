@@ -94,7 +94,7 @@ class Track(object):
 		body = util.call('track.subtitle.get',{'track_id':self.track_id})
 		return body["subtitle"]
 
-	#track.lyrics.fedback.post
+	#track.lyrics.feedback.post
 	def feedback(self,feedback):
 		"""
 		To leave feedback about lyrics for this track.

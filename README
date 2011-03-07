@@ -6,10 +6,11 @@ by Amelie Anglade and Thierry Bertin-Mahieux
    amelie.anglade@gmail.com & tb2332@columbia.edu
    February 2011
 
-GOAL
+DESCRIPTION
 ----
-Create a python wrapper around MusixMatch API:
+Python wrapper around MusixMatch API:
 http://developer.musixmatch.com
+Can make all the calls described in the documentation as of 03/2011
 
 INSTALL
 -------

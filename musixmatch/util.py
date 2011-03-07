@@ -27,6 +27,7 @@ import sys
 import time
 import copy
 import urllib
+import urllib2 # needed for the TIMEOUT option, otherwise urllib is enough
 try:
     from Queue import PriorityQueue, Empty
 except ImportError:
@@ -44,6 +45,10 @@ if('MUSIXMATCH_API_KEY' in os.environ):
 # details of the website to call
 API_HOST = 'api.musixmatch.com'
 API_SELECTOR = '/ws/1.1/'
+
+# timeout for the API call, raise a URLError if the call
+# takes too long
+MXM_CALL_TIMEOUT = 30 # seconds
 
 # cache time length (seconds)
 CACHE_TLENGTH = 3600
@@ -137,7 +142,7 @@ def call(method, params, nocaching=False):
     # encode the url request, call
     url = 'http://%s%s%s?%s' % (API_HOST, API_SELECTOR, method, params)
     #print url
-    f = urllib.urlopen(url)
+    f = urllib2.urlopen(url,timeout=MXM_CALL_TIMEOUT)
     response = f.read()
     # decode response into json
     response = decode_json(response)

@@ -28,8 +28,9 @@ import util
 import md5
 import urllib
 
+
 #tracking.url.get in the API
-def get_tracking_url(domain,apikey=None):
+def get_tracking_url(domain, apikey=None):
     """
     Get the base url for the tracking script you need to insert in your
     page to legalize your existent lyrics library.
@@ -39,20 +40,20 @@ def get_tracking_url(domain,apikey=None):
     RETURN
       a string representing a url
     """
-    params= {'domain':domain}
+    params = {'domain': domain}
     if not apikey is None:
         params['apikey'] = apikey
-    body = util.call('tracking.url.get',params)
+    body = util.call('tracking.url.get', params)
     return body['url']
 
 
-def rights_clearance(base_url,artistname,trackname,apikey=None):
+def rights_clearance(base_url, artistname, trackname, apikey=None):
     """
     This code returns the url for the rights of one song on your domain,
     read below. If apikey is not passed in, we look for it in your
     ENVIRONMENT.
     To compute base_url, see function above: get_tracking_url
-    
+
     We have implemented a fast and simple method to grant you the legal
     clearance of rights for your site, even before you migrate to a full
     musiXmatch API integration.
@@ -78,13 +79,12 @@ def rights_clearance(base_url,artistname,trackname,apikey=None):
     if apikey is None:
         apikey = os.environ['MUSIXMATCH_API_KEY']
     # quote names
-    aname_quote = urllib.quote( artistname.lower() )
-    tname_quote = urllib.quote( trackname.lower() )
+    aname_quote = urllib.quote(artistname.lower())
+    tname_quote = urllib.quote(trackname.lower())
     # create url
-    url = base_url + '?artist_name='+aname_quote
-    url += '&track_name='+tname_quote
+    url = base_url + '?artist_name=' + aname_quote
+    url += '&track_name=' + tname_quote
     # md5 signature
-    sig = md5.md5(url+apikey)
+    sig = md5.md5(url + apikey)
     # final url
-    return url +'&s='+sig.hexdigest()
-    
+    return url + '&s=' + sig.hexdigest()

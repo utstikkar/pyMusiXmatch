@@ -53,17 +53,19 @@ MXM_CALL_TIMEOUT = 30 # seconds
 # cache time length (seconds)
 CACHE_TLENGTH = 3600
 
+
 class TimedCache():
     """
     Class to cach hashable object for a given time length
     """
-    def __init__(self,verbose=0):
+
+    def __init__(self, verbose=0):
         """ contructor, init main dict and priority queue """
         self.stuff = {}
         self.last_cleanup = time.time()
-        self.verbose=verbose
-        
-    def cache(self,query,res):
+        self.verbose = verbose
+
+    def cache(self, query, res):
         """
         Cache a query with a given result
         Use the occasion to remove one old stuff if needed
@@ -71,27 +73,32 @@ class TimedCache():
         # remove old stuff
         curr_time = time.time()
         if curr_time - self.last_cleanup > CACHE_TLENGTH:
-            if self.verbose: print 'we cleanup cache'
+            if self.verbose:
+                print 'we cleanup cache'
             new_stuff = {}
-            new_stuff.update( filter(lambda x: curr_time - x[1][0] < CACHE_TLENGTH, self.stuff.items()) )
+            new_stuff.update(filter(
+                lambda x: curr_time - x[1][0] < CACHE_TLENGTH,
+                self.stuff.items()))
             self.stuff = new_stuff
             self.last_cleanup = curr_time
         # add object to cache (try/except should be useless now)
         try:
             hashcode = hash(query)
-            if self.verbose: print 'cache, hashcode is:',hashcode
+            if self.verbose:
+                print 'cache, hashcode is:', hashcode
             self.stuff[hashcode] = (time.time(), copy.deepcopy(res))
-        except TypeError,e:
-            print 'Error, stuff not hashable:',e
+        except TypeError, e:
+            print 'Error, stuff not hashable:', e
             pass
-        
-    def query_cache(self,query):
+
+    def query_cache(self, query):
         """
         query the cache for a given query
         Return None if not there or too old
         """
         hashcode = hash(query)
-        if self.verbose: print 'query_cache, hashcode is:',hashcode
+        if self.verbose:
+            print 'query_cache, hashcode is:', hashcode
         if hashcode in self.stuff.keys():
             data = self.stuff[hashcode]
             if time.time() - data[0] > CACHE_TLENGTH:
@@ -103,12 +110,14 @@ class TimedCache():
 # instace of the cache
 MXMPY_CACHE = TimedCache()
 
+
 # typical API error message
 class MusixMatchAPIError(Exception):
     """
     Error raised when the status code returned by
     the MusixMatch API is not 200
     """
+
     def __init__(self, code, message=None):
         self.mxm_code = code
         if message is None:
@@ -124,25 +133,25 @@ def call(method, params, nocaching=False):
       params     - dictionary of params, e.g. track_id -> 123
       nocaching  - set to True to disable caching
     """
-    for k,v in params.items():
+    for k, v in params.items():
         if isinstance(v, unicode):
             params[k] = v.encode('utf-8')
     # sanity checks
-    params['format']='json'
+    params['format'] = 'json'
     if not 'apikey' in params.keys() or params['apikey'] is None:
         params['apikey'] = MUSIXMATCH_API_KEY
     if params['apikey'] is None:
-        raise MusixMatchAPIError(-1,'EMPTY API KEY, NOT IN YOUR ENVIRONMENT?')
+        raise MusixMatchAPIError(-1, 'EMPTY API KEY, NOT IN YOUR ENVIRONMENT?')
     params = urllib.urlencode(params)
     # caching
     if not nocaching:
-        cached_res = MXMPY_CACHE.query_cache(method+str(params))
+        cached_res = MXMPY_CACHE.query_cache(method + str(params))
         if not cached_res is None:
             return cached_res
     # encode the url request, call
     url = 'http://%s%s%s?%s' % (API_HOST, API_SELECTOR, method, params)
     #print url
-    f = urllib2.urlopen(url,timeout=MXM_CALL_TIMEOUT)
+    f = urllib2.urlopen(url, timeout=MXM_CALL_TIMEOUT)
     response = f.read()
     # decode response into json
     response = decode_json(response)
@@ -150,9 +159,10 @@ def call(method, params, nocaching=False):
     res_checked = check_status(response)
     # cache
     if not nocaching:
-        MXMPY_CACHE.cache(method+str(params),res_checked)
+        MXMPY_CACHE.cache(method + str(params), res_checked)
     # done
     return res_checked
+
 
 def decode_json(raw_json):
     """
@@ -164,6 +174,7 @@ def decode_json(raw_json):
     except ValueError:
         raise MusixMatchAPIError(-1, "Unknown error.")
     return response_dict
+
 
 def check_status(response):
     """
@@ -188,24 +199,35 @@ def check_status(response):
     body = msg['body']
     return body
 
+
 def status_code(value):
     """
     Get a value, i.e. error code as a int.
     Returns an appropriate message.
     """
     if value == 200:
-        return "The request was successful."
+        q = "The request was successful."
+        return q
     if value == 400:
-        return "The request had bad syntax or was inherently impossible to be satisfied."
+        q = "The request had bad syntax or was inherently impossible"
+        q += " to be satisfied."
+        return q
     if value == 401:
-        return "Authentication failed, probably because of a bad API key."
+        q = "Authentication failed, probably because of a bad API key."
+        return q
     if value == 402:
-        return "A limit was reached, either you exceeded per hour requests limits or your balance is insufficient."
+        q = "A limit was reached, either you exceeded per hour requests"
+        q += " limits or your balance is insufficient."
+        return q
     if value == 403:
-        return "You are not authorized to perform this operation / the api version you're trying to use has been shut down."
+        q = "You are not authorized to perform this operation / the api"
+        q += " version you're trying to use has been shut down."
+        return q
     if value == 404:
-        return "Requested resource was not found."
+        q = "Requested resource was not found."
+        return q
     if value == 405:
-        return "Requested method was not found."
+        q = "Requested method was not found."
+        return q
     # wrong code?
-    return "Unknown error code: "+str(value)
+    return "Unknown error code: " + str(value)
